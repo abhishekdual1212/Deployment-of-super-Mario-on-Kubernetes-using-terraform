@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: mario-container
-        image: sevenajay/mario:latest 
+        image: shivagupta9765/mario:latest 
         ports:
         - containerPort: 80
         resources:  # Added resource limits for better stability
