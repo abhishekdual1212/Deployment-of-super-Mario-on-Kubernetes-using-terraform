@@ -2,10 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mario-deployment
+  namespace: mario
   labels:
     app: mario
 spec:
-  replicas: 3
+  replicas: 100
   selector:
     matchLabels:
       app: mario
