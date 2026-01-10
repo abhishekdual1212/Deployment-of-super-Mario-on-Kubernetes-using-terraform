@@ -1,116 +1,179 @@
-# **🚀 Deploying Super Mario on AWS EKS using Terraform**  
+🚀 EKS GitOps & Monitoring Project
+ArgoCD + Prometheus + Grafana on AWS EKS
 
-Super Mario is a legendary game we all cherish! In this project, we will deploy **Super Mario** on **Amazon EKS (Elastic Kubernetes Service)** using **Terraform** and manage infrastructure with AWS resources.  
+This repository demonstrates a production-aligned DevOps setup on AWS EKS using GitOps and Monitoring best practices.
 
-![Super Mario](https://imgur.com/Njqsei9.gif)  
+You will learn how to:
 
----
+Deploy GitOps using ArgoCD
 
-## 📌 **Project Overview**
+Monitor Kubernetes using Prometheus & Grafana
 
-This project provisions an **EKS cluster** on AWS and deploys the **Super Mario game** using **Terraform** and **Kubernetes manifests**. The deployment includes:
+Use Helm for managing monitoring stacks
 
-- ✅ Amazon EKS Cluster provisioning
-- ✅ Terraform Infrastructure as Code (IaC)
-- ✅ Kubernetes Deployment & Service for Super Mario
-- ✅ AWS S3 Backend for Terraform state management
-- ✅ IAM roles & policies for EKS & worker nodes
+Work with real-world EKS workflows
 
----
+✅ Interview-ready
+✅ Beginner-friendly
+✅ Industry-standard DevOps practices
 
-## **📁 Project Structure**  
+🧰 Tech Stack
 
-```bash
-📂 DEPLOYMENT-OF-SUPER-MARIO
-│── 📂 EKS-TF               # Terraform configuration files for AWS EKS
-│   ├── backend.tf          # S3 backend for Terraform state management
-│   ├── main.tf             # AWS EKS Cluster and Node Group definition
-│   ├── provider.tf         # AWS provider configuration
-│   ├── deployment.yaml     # Kubernetes Deployment for Super Mario
-│   ├── service.yaml        # Kubernetes Service for exposing Super Mario app
-│── 📄 README.md            # Project documentation
-```
+AWS EKS – Kubernetes cluster
 
----
+eksctl – EKS cluster creation
 
-## **📌 Prerequisites**  
+kubectl – Kubernetes CLI
 
-Before proceeding, ensure you have the following installed:
+ArgoCD – GitOps Continuous Delivery
 
-- ✅ **Terraform** (>=1.3.0)  
-- ✅ **AWS CLI** (Configured with proper credentials)  
-- ✅ **kubectl** (For managing Kubernetes resources)  
-- ✅ **Docker** (For containerization)  
+Prometheus – Metrics collection
 
----
+Grafana – Visualization & dashboards
 
-## **🛠️ Setup & Deployment**  
+Helm – Kubernetes package manager
 
-### **1️⃣ Clone the Repository**  
+Docker
 
-```bash
-git clone https://github.com/NotHarshhaa/Deployment-of-super-Mario-on-Kubernetes-using-terraform.git
-cd Deployment-of-super-Mario-on-Kubernetes-using-terraform/EKS-TF
-```
+Ubuntu (EC2)
 
-### **2️⃣ Initialize & Apply Terraform**  
+🧱 Architecture Overview
+GitHub Repository
+        |
+        v
+     ArgoCD
+        |
+        v
+ AWS EKS Cluster
+ ├── Application Pods
+ ├── Prometheus (Metrics)
+ ├── Alertmanager
+ └── Grafana (Dashboards)
 
-```bash
-terraform init      # Initialize Terraform backend
-terraform plan      # Preview infrastructure changes
-terraform apply -auto-approve  # Deploy to AWS
-```
+📌 Prerequisites
 
-### **3️⃣ Configure Kubernetes Context**  
+AWS Account
 
-```bash
-aws eks update-kubeconfig --name EKS_CLOUD --region ap-south-1
-```
+Ubuntu EC2 Instance
 
-### **4️⃣ Deploy Super Mario Application**  
+IAM Role attached to EC2 with:
 
-```bash
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-```
+AmazonEKSFullAccess
 
-### **5️⃣ Access the Application**  
+IAMFullAccess
 
-Once deployed, get the external LoadBalancer URL:  
+EC2FullAccess
 
-```bash
-kubectl get services mario-service
-```
+🔧 Install Required Tools (Ubuntu)
 
-Access **Super Mario** in your browser using the displayed URL.
+Verify installations:
 
----
-
-## **🎯 Project Highlights**
-
-- **AWS EKS**: Managed Kubernetes cluster for scalable deployment.  
-- **Terraform**: Infrastructure as Code (IaC) for automated provisioning.  
-- **Kubernetes**: Ensures containerized deployment of the game.  
-- **AWS S3 Backend**: Remote state management for Terraform.  
-
----
-
-## **🔗 Resources**
-
-- **Terraform Docs**: [https://developer.hashicorp.com/terraform/docs](https://developer.hashicorp.com/terraform/docs)  
-- **AWS EKS Docs**: [https://docs.aws.amazon.com/eks/latest/userguide](https://docs.aws.amazon.com/eks/latest/userguide)  
-- **Kubernetes Docs**: [https://kubernetes.io/docs/home/](https://kubernetes.io/docs/home/)  
-
----
-
-## **📢 Credits & Acknowledgments**  
-
-This project is inspired by the **Super Mario** game, and it demonstrates real-world **DevOps practices** using AWS, Terraform, and Kubernetes.  
-
-👉 **Read the detailed blog here**: [Super Mario EKS Deployment](https://blog.prodevopsguy.xyz/deployment-of-super-mario-on-kubernetes-using-terraform)  
-
-🚀 *Happy Gaming & DevOps-ing!* 🎮
-
----
+aws --version
+kubectl version --client
+eksctl version
+docker --version
+helm version
 
 
+📌 Installation scripts are included in the repository.
+
+☸️ Create EKS Cluster
+eksctl create cluster \
+--name my-cluster \
+--region ap-south-1 \
+--nodegroup-name ng-1 \
+--node-type t3.medium \
+--nodes 2
+
+Verify Cluster
+kubectl get nodes
+
+🔄 Install ArgoCD
+Create Namespace & Install
+kubectl create namespace argocd
+
+kubectl apply -n argocd \
+-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+Access ArgoCD UI
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+Get Admin Password
+kubectl get secret argocd-initial-admin-secret -n argocd \
+-o jsonpath="{.data.password}" | base64 -d
+
+
+Login
+
+Username: admin
+
+Password: (output from above command)
+
+📊 Install Monitoring (Prometheus + Grafana)
+Add Helm Repo
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+Install Monitoring Stack
+kubectl create namespace monitoring
+
+helm install prometheus prometheus-community/kube-prometheus-stack \
+-n monitoring
+
+Verify Pods
+kubectl get pods -n monitoring
+
+📈 Access Grafana
+kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
+
+
+URL: http://localhost:3000
+
+Username: admin
+
+Get Grafana Password
+kubectl get secret prometheus-grafana -n monitoring \
+-o jsonpath="{.data.admin-password}" | base64 -d
+
+📊 ArgoCD Monitoring in Grafana
+Steps Performed
+
+Enabled ArgoCD metrics
+
+Created ServiceMonitor for ArgoCD
+
+Verified Prometheus targets
+
+Imported Grafana dashboards
+
+Recommended Dashboard IDs
+
+ArgoCD Dashboard → 14584
+
+Kubernetes Cluster → 7249
+
+Node Metrics → 1860
+
+✅ Verification
+kubectl get pods -n argocd
+kubectl get pods -n monitoring
+
+
+Prometheus targets should show:
+
+Status: UP
+
+🧹 Cleanup (Delete Cluster)
+eksctl delete cluster --name my-cluster --region ap-south-1
+
+🎯 Key Learnings
+
+GitOps workflow using ArgoCD
+
+Kubernetes monitoring using Prometheus & Grafana
+
+ServiceMonitor & metrics scraping
+
+AWS EKS lifecycle management
+
+Real-world DevOps practices
