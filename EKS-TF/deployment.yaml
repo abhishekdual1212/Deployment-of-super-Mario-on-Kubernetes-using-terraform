@@ -5,7 +5,7 @@ metadata:
   labels:
     app: mario
 spec:
-  replicas: 3  # Increased replicas for better scalability
+  replicas: 3
   selector:
     matchLabels:
       app: mario
@@ -15,26 +15,29 @@ spec:
         app: mario
     spec:
       containers:
-      - name: mario-container
-        image: shivagupta9765/mario:latest 
-        ports:
-        - containerPort: 80
-        resources:  # Added resource limits for better stability
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "250m"
-            memory: "256Mi"
-        livenessProbe:  # Added liveness probe for better monitoring
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        readinessProbe:  # Added readiness probe to handle traffic only when ready
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 3
-          periodSeconds: 5
+        - name: mario-container
+          image: shivagupta9765/mario:latest
+          ports:
+            - containerPort: 80
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
