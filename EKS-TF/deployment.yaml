@@ -6,7 +6,7 @@ metadata:
   labels:
     app: mario
 spec:
-  replicas: 100
+  replicas: 3
   selector:
     matchLabels:
       app: mario
